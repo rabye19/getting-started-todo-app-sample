@@ -12,9 +12,7 @@ services:
       - backend
 
   backend:
-    build:
-      context: ./
-      target: backend-dev
+    image: rabye19/todo-backend:latest
     environment:
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_USER: ${MYSQL_USER}
@@ -35,9 +33,7 @@ services:
       - "traefik.http.services.backend.loadbalancer.server.port=3000"
 
   client:
-    build:
-      context: ./
-      target: client-dev
+    image: rabye19/todo-frontend:latest
     develop:
       watch:
         - path: ./client/src
