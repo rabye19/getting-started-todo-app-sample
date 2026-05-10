@@ -1,56 +1,115 @@
-# Getting Started Todo App
+# Todo App — Projet DevOps
 
-This project provides a sample todo list application. It demonstrates all of
-the current Docker best practices, ranging from the Compose file, to the
-Dockerfile, to CI (using GitHub Actions), and running tests. It's intended to 
-be a well-documented to ensure anyone can come in and easily learn.
+**Rabye Trabelsi & Asma Krimi** | Enseignant : Hatem Hamdi | 2025-2026
 
-## Application architecture
+Application de gestion de tâches déployée avec une pipeline CI/CD complète et un système de monitoring.
 
-![image](https://github.com/docker/getting-started-todo-app/assets/313480/c128b8e4-366f-4b6f-ad73-08e6652b7c4d)
+---
 
+## Stack technique
 
-This sample application is a simple React frontend that receives data from a
-Node.js backend. 
+| Composant | Technologie |
+|-----------|-------------|
+| Frontend | React + Vite |
+| Backend | Node.js + Express |
+| Base de données | MySQL 8.0 |
+| Reverse proxy | Traefik v2.11 |
+| Administration BDD | phpMyAdmin |
+| Monitoring | Prometheus + Grafana |
+| CI/CD | GitHub Actions |
+| Conteneurisation | Docker + Docker Compose |
 
-When the application is packaged and shipped, the frontend is compiled into
-static HTML, CSS, and JS and then bundled with the backend where it is then
-served as static assets. So no... there is no server-side rendering going on
-with this sample app.
+---
 
-During development, since the backend and frontend need different dev tools, 
-they are split into two separate services. This allows [Vite](https://vitejs.dev/) 
-to manage the React app while [nodemon](https://nodemon.io/) works with the 
-backend. With containers, it's easy to separate the development needs!
+## Prérequis
 
-## Development
+- Docker et Docker Compose installés
+- Git
 
-To spin up the project, simply install Docker Desktop and then run the following 
-commands:
+---
 
+## Installation et lancement
+
+### 1. Cloner le dépôt
+
+```bash
+git clone https://github.com/rabye19/getting-started-todo-app-sample
+cd getting-started-todo-app-sample
 ```
-git clone https://github.com/docker/getting-started-todo-app
-cd getting-started-todo-app
+
+### 2. Créer le fichier `.env`
+
+```bash
+MYSQL_HOST=mysql
+MYSQL_USER=root
+MYSQL_PASSWORD=secret
+MYSQL_ROOT_PASSWORD=secret
+MYSQL_DATABASE=todos
+MYSQL_DB=todos
+```
+
+### 3. Lancer l'application
+
+```bash
 docker compose up -d
 ```
 
-You'll see several container images get downloaded from Docker Hub and, after a
-moment, the application will be up and running! No need to install or configure
-anything on your machine!
+---
 
-Simply open to [http://localhost](http://localhost) to see the app up and running!
+## URLs d'accès
 
-Any changes made to either the backend or frontend should be seen immediately
-without needing to rebuild or restart the containers.
+| Service | URL |
+|---------|-----|
+| Application | `http://192.168.1.135` |
+| phpMyAdmin | `http://db.localhost` |
+| Prometheus | `http://192.168.1.135/prometheus` |
+| Grafana | `http://192.168.1.135/grafana` |
 
-To help with the database, the development stack also includes phpMyAdmin, which
-can be access at [http://db.localhost](http://db.localhost) (most browsers will 
-resolve `*.localhost` correctly, so no hosts file changes should be required).
+> Grafana — login : `admin` / mot de passe : `admin`
 
-### Tearing it down
+---
 
-When you're done, simply remove the containers by running the following command:
+## Pipeline CI/CD
+
+### CI (Intégration Continue)
+Déclenchée sur chaque push vers `main`, `dev` ou `feature/**` :
+- Lint backend et frontend (ESLint)
+- Tests backend
+- Build frontend (Vite)
+- Build et push des images Docker sur Docker Hub
+
+### CD (Déploiement Continu)
+Déclenchée sur chaque push vers `main` :
+- Déploiement automatique sur la VM via un runner self-hosted
+- Mise à jour des containers Docker
+
+---
+
+## Flux de travail Git
 
 ```
-docker compose down
+feature/xxx  →  dev  →  main
+     PR           PR
+  (review)     (review)
+                  ↓
+            CD Pipeline
+                  ↓
+          VM 192.168.1.135
 ```
+
+> Toujours créer les PRs vers `dev` d'abord, jamais directement vers `main`.
+
+---
+
+## Monitoring
+
+Le monitoring est assuré par Prometheus (collecte des métriques Traefik) et Grafana (visualisation).
+
+Dashboard Grafana utilisé : **Traefik Official Standalone Dashboard** (ID : `17346`)
+
+---
+
+## Auteurs
+
+- **Rabye Trabelsi** — CI, Docker, Monitoring
+- **Asma Krimi** — CD, Déploiement VM, Documentation
