@@ -19,6 +19,7 @@ jobs:
       - name: Copy compose.yml and .env
         run: |
           cp compose.yml ~/todo-app/compose.yml
+          cp prometheus.yml ~/todo-app/prometheus.yml
 
       - name: Deploy with Docker Compose
         run: |
